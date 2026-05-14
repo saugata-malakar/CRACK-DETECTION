@@ -7,9 +7,8 @@
 
 **AI-Powered Structural Health Monitoring System**
 
-🌐 **Live Demo:** [https://concrete-crack-detection-nine.vercel.app](https://concrete-crack-detection-nine.vercel.app)
+🌐 **Live Demo:** [https://crack-detection-6j4c.onrender.com/](https://crack-detection-6j4c.onrender.com/)
 
-📱 **Local Demo:** [http://localhost:5000](http://localhost:5000)
 
 ---
 
