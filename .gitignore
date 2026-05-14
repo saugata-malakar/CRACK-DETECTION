@@ -4,3 +4,4 @@ __pycache__/
 checkpoints/*.pth
 crack_detection.db
 *.pdf
+client_secret.json
