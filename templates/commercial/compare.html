@@ -1,0 +1,396 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Compare Models - CrackDetect AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .compare-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .compare-header h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .compare-header p {
+        font-size: 1.2rem;
+        color: var(--gray);
+    }
+    
+    .upload-section {
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        margin-bottom: 3rem;
+    }
+    
+    .upload-area {
+        border: 3px dashed var(--gray-light);
+        border-radius: 16px;
+        padding: 4rem 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        background: var(--bg);
+    }
+    
+    .upload-area:hover {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+    
+    .upload-icon {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .results-section {
+        display: none;
+    }
+    
+    .results-section.show {
+        display: block;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .results-image {
+        background: white;
+        padding: 2rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .results-image img {
+        max-width: 100%;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .model-result-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+    
+    .model-result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+        border-color: var(--primary);
+    }
+    
+    .model-result-card.best {
+        border-color: var(--success);
+        position: relative;
+    }
+    
+    .best-badge {
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: var(--success);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+    
+    .model-result-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--bg);
+    }
+    
+    .model-result-header h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+    
+    .model-meta {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--gray);
+    }
+    
+    .prediction-display {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .prediction-display.cracked {
+        background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .prediction-display.non-cracked {
+        background: rgba(16, 185, 129, 0.1);
+    }
+    
+    .prediction-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--gray);
+        margin-bottom: 0.5rem;
+    }
+    
+    .prediction-value {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    
+    .prediction-display.cracked .prediction-value {
+        color: var(--danger);
+    }
+    
+    .prediction-display.non-cracked .prediction-value {
+        color: var(--success);
+    }
+    
+    .confidence-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .probabilities-list {
+        list-style: none;
+    }
+    
+    .probability-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--bg);
+    }
+    
+    .probability-item:last-child {
+        border-bottom: none;
+    }
+    
+    .probability-label {
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .probability-value {
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 3rem;
+        display: none;
+    }
+    
+    .loading.show {
+        display: block;
+    }
+    
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--gray-light);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .comparison-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="compare-header">
+    <h1>⚖️ Compare AI Models</h1>
+    <p>Test the same image across all available models</p>
+</div>
+
+<div class="upload-section">
+    <div class="upload-area" onclick="document.getElementById('compareFileInput').click()">
+        <div class="upload-icon">
+            <i class="fas fa-images"></i>
+        </div>
+        <h3>Upload Image for Comparison</h3>
+        <p>Compare predictions across {{ models|length }} AI models</p>
+        <button type="button" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Choose Image
+        </button>
+        <input type="file" id="compareFileInput" accept="image/*" style="display: none;" onchange="handleCompareFile(event)">
+    </div>
+</div>
+
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <h3>Comparing models...</h3>
+    <p style="color: var(--gray);">Running predictions across all models</p>
+</div>
+
+<div class="results-section" id="resultsSection">
+    <div class="results-image">
+        <h2 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 1.5rem;">
+            <i class="fas fa-image"></i> Analyzed Image
+        </h2>
+        <img id="comparedImage" src="" alt="Compared image">
+    </div>
+    
+    <h2 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 2rem; text-align: center;">
+        <i class="fas fa-chart-bar"></i> Model Comparison Results
+    </h2>
+    
+    <div class="comparison-grid" id="comparisonGrid">
+        <!-- Results will be inserted here -->
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+        <button class="btn btn-primary" onclick="compareAnother()">
+            <i class="fas fa-redo"></i> Compare Another Image
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function handleCompareFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Show loading
+        document.querySelector('.upload-section').style.display = 'none';
+        document.getElementById('resultsSection').classList.remove('show');
+        document.getElementById('loading').classList.add('show');
+        
+        // Send to API
+        fetch('/api/compare', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading').classList.remove('show');
+            
+            if (data.success) {
+                displayComparisonResults(data);
+            } else {
+                alert('Error: ' + data.error);
+                document.querySelector('.upload-section').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading').classList.remove('show');
+            alert('Error: ' + error.message);
+            document.querySelector('.upload-section').style.display = 'block';
+        });
+    }
+    
+    function displayComparisonResults(data) {
+        // Set image
+        document.getElementById('comparedImage').src = data.image;
+        
+        // Clear previous results
+        const grid = document.getElementById('comparisonGrid');
+        grid.innerHTML = '';
+        
+        // Find best confidence
+        let bestConfidence = 0;
+        data.results.forEach(result => {
+            if (result.confidence > bestConfidence) {
+                bestConfidence = result.confidence;
+            }
+        });
+        
+        // Create result cards
+        data.results.forEach(result => {
+            const isBest = result.confidence === bestConfidence;
+            const predictionClass = result.prediction === 'Cracked' ? 'cracked' : 'non-cracked';
+            
+            const card = `
+                <div class="model-result-card ${isBest ? 'best' : ''}">
+                    ${isBest ? '<div class="best-badge">🏆 Best</div>' : ''}
+                    <div class="model-result-header">
+                        <h3>${result.model}</h3>
+                        <div class="model-meta">
+                            <span><i class="fas fa-bullseye"></i> ${result.accuracy}</span>
+                            <span><i class="fas fa-tachometer-alt"></i> ${result.speed}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-display ${predictionClass}">
+                        <div class="prediction-label">Prediction</div>
+                        <div class="prediction-value">${result.prediction}</div>
+                        <div class="confidence-value">${result.confidence}% confidence</div>
+                    </div>
+                    
+                    <ul class="probabilities-list">
+                        <li class="probability-item">
+                            <span class="probability-label">Non-cracked</span>
+                            <span class="probability-value">${result.probabilities['Non-cracked']}%</span>
+                        </li>
+                        <li class="probability-item">
+                            <span class="probability-label">Cracked</span>
+                            <span class="probability-value">${result.probabilities['Cracked']}%</span>
+                        </li>
+                    </ul>
+                </div>
+            `;
+            
+            grid.innerHTML += card;
+        });
+        
+        // Show results
+        document.getElementById('resultsSection').classList.add('show');
+    }
+    
+    function compareAnother() {
+        document.getElementById('resultsSection').classList.remove('show');
+        document.querySelector('.upload-section').style.display = 'block';
+        document.getElementById('compareFileInput').value = '';
+    }
+</script>
+{% endblock %}

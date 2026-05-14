@@ -1,0 +1,396 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Projects - CrackDetect AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .projects-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .projects-header h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .projects-header p {
+        font-size: 1.2rem;
+        color: var(--gray);
+    }
+    .projects-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    .project-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+    .project-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    .project-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.18);
+        border-color: var(--primary-light);
+    }
+    .project-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.2rem;
+    }
+    .project-card-header h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        color: var(--dark);
+        margin: 0;
+    }
+    .project-type-badge {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 0.3rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .project-location {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    .project-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .project-stat {
+        text-align: center;
+        background: var(--bg);
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    .project-stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--primary);
+    }
+    .project-stat-label {
+        font-size: 0.8rem;
+        color: var(--gray);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .project-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bg);
+    }
+    .project-date {
+        font-size: 0.85rem;
+        color: var(--gray);
+    }
+    .project-status {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--success);
+        font-weight: 600;
+    }
+    .project-status-dot {
+        width: 8px; height: 8px;
+        background: var(--success);
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    }
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.6;
+    }
+    .empty-state h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+    .empty-state p {
+        color: var(--gray);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.show {
+        display: flex;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+        animation: scaleIn 0.3s ease-out;
+    }
+    .modal-content h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid var(--gray-light);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.3s;
+        box-sizing: border-box;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .btn-cancel {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: none;
+        color: var(--gray);
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+    }
+    .btn-cancel:hover { color: var(--dark); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="projects-header animate-fade-in-up">
+    <h1><i class="fas fa-project-diagram"></i> Project Management</h1>
+    <p>Organize your inspections by projects, sites, and structures</p>
+</div>
+
+<div class="projects-actions">
+    <button class="btn btn-primary" onclick="showModal()">
+        <i class="fas fa-plus"></i> Create New Project
+    </button>
+</div>
+
+<div class="projects-grid" id="projectsGrid"></div>
+
+<div class="empty-state" id="emptyState" style="display: none;">
+    <div class="empty-state-icon">🏗️</div>
+    <h3>No Projects Yet</h3>
+    <p>Create your first project to start organizing your inspections</p>
+    <button class="btn btn-primary" onclick="showModal()">
+        <i class="fas fa-plus"></i> Create Project
+    </button>
+</div>
+
+<!-- Create Project Modal -->
+<div class="modal-overlay" id="projectModal">
+    <div class="modal-content">
+        <h3><i class="fas fa-folder-plus" style="color: var(--primary);"></i> Create New Project</h3>
+        <form id="createProjectForm">
+            <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" id="projectName" class="form-input" placeholder="e.g., Downtown Bridge Inspection" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="projectDescription" class="form-textarea" rows="2" placeholder="Brief description of the project..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="projectLocation" class="form-input" placeholder="e.g., Main Street, City">
+            </div>
+            <div class="form-group">
+                <label>Project Type</label>
+                <select id="projectType" class="form-select" required>
+                    <option value="">Select Type</option>
+                    <option value="Bridge">🌉 Bridge</option>
+                    <option value="Building">🏢 Building</option>
+                    <option value="Road">🛣️ Road / Pavement</option>
+                    <option value="Tunnel">🚇 Tunnel</option>
+                    <option value="Dam">🏗️ Dam</option>
+                    <option value="Retaining Wall">🧱 Retaining Wall</option>
+                    <option value="Other">📋 Other</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="hideModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Create Project
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let projects = [];
+
+    document.addEventListener('DOMContentLoaded', loadProjects);
+
+    function loadProjects() {
+        fetch('/api/projects')
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    projects = data.projects;
+                    renderProjects();
+                }
+            })
+            .catch(err => console.error('Error loading projects:', err));
+    }
+
+    function renderProjects() {
+        const grid = document.getElementById('projectsGrid');
+        const empty = document.getElementById('emptyState');
+
+        if (projects.length === 0) {
+            grid.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+
+        grid.innerHTML = projects.map((p, i) => `
+            <div class="project-card animate-fade-in-up" style="animation-delay: ${i * 0.1}s" onclick="window.location.href='/projects/${p.id}'">
+                <div class="project-card-header">
+                    <h3>${p.name}</h3>
+                    <span class="project-type-badge">${p.project_type || 'General'}</span>
+                </div>
+                <div class="project-location">
+                    <i class="fas fa-map-marker-alt"></i> ${p.location || 'No location set'}
+                </div>
+                <div class="project-stats">
+                    <div class="project-stat">
+                        <div class="project-stat-value">${p.site_count || 0}</div>
+                        <div class="project-stat-label">Sites</div>
+                    </div>
+                    <div class="project-stat">
+                        <div class="project-stat-value">${p.inspection_count || 0}</div>
+                        <div class="project-stat-label">Inspections</div>
+                    </div>
+                </div>
+                <div class="project-footer">
+                    <span class="project-date">Created: ${new Date(p.created_at).toLocaleDateString()}</span>
+                    <span class="project-status"><span class="project-status-dot"></span> Active</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showModal() {
+        document.getElementById('projectModal').classList.add('show');
+    }
+    function hideModal() {
+        document.getElementById('projectModal').classList.remove('show');
+    }
+
+    document.getElementById('projectModal').addEventListener('click', function(e) {
+        if (e.target === this) hideModal();
+    });
+
+    document.getElementById('createProjectForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('projectName').value,
+            description: document.getElementById('projectDescription').value,
+            location: document.getElementById('projectLocation').value,
+            project_type: document.getElementById('projectType').value
+        };
+
+        fetch('/api/projects/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                hideModal();
+                this.reset();
+                loadProjects();
+            } else {
+                alert('Error: ' + (res.error || 'Failed to create project'));
+            }
+        })
+        .catch(err => alert('Error creating project: ' + err.message));
+    });
+</script>
+{% endblock %}

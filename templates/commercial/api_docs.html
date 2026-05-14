@@ -1,0 +1,384 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}API Documentation - CrackDetect AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .api-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 4rem 3rem;
+        border-radius: 24px;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .api-header h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .api-content {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 3rem;
+    }
+    
+    .api-sidebar {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+    
+    .api-nav {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .api-nav h3 {
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+    
+    .api-nav ul {
+        list-style: none;
+    }
+    
+    .api-nav li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .api-nav a {
+        color: var(--gray);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .api-nav a:hover {
+        color: var(--primary);
+    }
+    
+    .api-section {
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+    
+    .api-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--dark);
+    }
+    
+    .code-block {
+        background: var(--dark);
+        color: #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+    }
+    
+    .endpoint {
+        background: var(--bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .endpoint-method {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 1rem;
+    }
+    
+    .method-post {
+        background: var(--success);
+        color: white;
+    }
+    
+    .method-get {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .endpoint-path {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .param-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+    }
+    
+    .param-table th {
+        text-align: left;
+        padding: 1rem;
+        background: var(--bg);
+        font-weight: 600;
+        border-bottom: 2px solid var(--gray-light);
+    }
+    
+    .param-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--bg);
+    }
+    
+    .param-required {
+        color: var(--danger);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    @media (max-width: 968px) {
+        .api-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .api-sidebar {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="api-header">
+    <h1>📚 API Documentation</h1>
+    <p style="opacity: 0.95; font-size: 1.2rem;">Integrate crack detection into your applications</p>
+</div>
+
+<div class="api-content">
+    <div class="api-sidebar">
+        <nav class="api-nav">
+            <h3>Contents</h3>
+            <ul>
+                <li><a href="#authentication">Authentication</a></li>
+                <li><a href="#predict">Predict Endpoint</a></li>
+                <li><a href="#compare">Compare Endpoint</a></li>
+                <li><a href="#examples">Code Examples</a></li>
+                <li><a href="#errors">Error Handling</a></li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="api-main">
+        <div class="api-section" id="authentication">
+            <h2>🔐 Authentication</h2>
+            <p>All API requests require authentication using your API key. Include it in the request headers:</p>
+            
+            <div class="code-block">
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+            </div>
+            
+            <p style="margin-top: 1rem;">You can find your API key in your <a href="/dashboard" style="color: var(--primary); font-weight: 600;">dashboard</a>.</p>
+        </div>
+        
+        <div class="api-section" id="predict">
+            <h2>🔮 Predict Endpoint</h2>
+            <p>Analyze a single image for crack detection.</p>
+            
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <span class="endpoint-path">/api/predict</span>
+            </div>
+            
+            <h3 style="margin: 2rem 0 1rem;">Parameters</h3>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>file</code></td>
+                        <td>File</td>
+                        <td><span class="param-required">Required</span></td>
+                        <td>Image file (JPG, PNG, max 16MB)</td>
+                    </tr>
+                    <tr>
+                        <td><code>model</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Model name (resnet18, resnet50, efficientnet_b0, vgg16)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 2rem 0 1rem;">Response</h3>
+            <div class="code-block">
+{
+  "success": true,
+  "prediction": "Cracked",
+  "confidence": 96.5,
+  "probabilities": {
+    "Non-cracked": 3.5,
+    "Cracked": 96.5
+  },
+  "model": "ResNet-18",
+  "timestamp": "2024-05-13 15:30:45"
+}
+            </div>
+        </div>
+        
+        <div class="api-section" id="compare">
+            <h2>⚖️ Compare Endpoint</h2>
+            <p>Compare predictions across all available models.</p>
+            
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <span class="endpoint-path">/api/compare</span>
+            </div>
+            
+            <h3 style="margin: 2rem 0 1rem;">Parameters</h3>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>file</code></td>
+                        <td>File</td>
+                        <td><span class="param-required">Required</span></td>
+                        <td>Image file (JPG, PNG, max 16MB)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 2rem 0 1rem;">Response</h3>
+            <div class="code-block">
+{
+  "success": true,
+  "results": [
+    {
+      "model": "ResNet-18",
+      "prediction": "Cracked",
+      "confidence": 96.5,
+      "accuracy": "96-98%",
+      "speed": "Fast"
+    },
+    ...
+  ],
+  "timestamp": "2024-05-13 15:30:45"
+}
+            </div>
+        </div>
+        
+        <div class="api-section" id="examples">
+            <h2>💻 Code Examples</h2>
+            
+            <h3 style="margin: 2rem 0 1rem;">Python</h3>
+            <div class="code-block">
+import requests
+
+url = "https://api.crackdetect.ai/api/predict"
+headers = {"Authorization": "Bearer YOUR_API_KEY"}
+files = {"file": open("image.jpg", "rb")}
+data = {"model": "resnet18"}
+
+response = requests.post(url, headers=headers, files=files, data=data)
+result = response.json()
+
+print(f"Prediction: {result['prediction']}")
+print(f"Confidence: {result['confidence']}%")
+            </div>
+            
+            <h3 style="margin: 2rem 0 1rem;">JavaScript</h3>
+            <div class="code-block">
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+formData.append('model', 'resnet18');
+
+fetch('https://api.crackdetect.ai/api/predict', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: formData
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Prediction:', data.prediction);
+  console.log('Confidence:', data.confidence + '%');
+});
+            </div>
+            
+            <h3 style="margin: 2rem 0 1rem;">cURL</h3>
+            <div class="code-block">
+curl -X POST https://api.crackdetect.ai/api/predict \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@image.jpg" \
+  -F "model=resnet18"
+            </div>
+        </div>
+        
+        <div class="api-section" id="errors">
+            <h2>⚠️ Error Handling</h2>
+            <p>The API uses standard HTTP status codes:</p>
+            
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Status Code</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>200</code></td>
+                        <td>Success</td>
+                    </tr>
+                    <tr>
+                        <td><code>400</code></td>
+                        <td>Bad Request - Invalid parameters</td>
+                    </tr>
+                    <tr>
+                        <td><code>401</code></td>
+                        <td>Unauthorized - Invalid API key</td>
+                    </tr>
+                    <tr>
+                        <td><code>403</code></td>
+                        <td>Forbidden - Plan limit exceeded</td>
+                    </tr>
+                    <tr>
+                        <td><code>500</code></td>
+                        <td>Internal Server Error</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 2rem 0 1rem;">Error Response</h3>
+            <div class="code-block">
+{
+  "error": "Monthly prediction limit reached. Please upgrade your plan."
+}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

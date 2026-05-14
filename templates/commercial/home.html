@@ -1,0 +1,890 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}CrackDetect AI - Professional Crack Detection Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Animated Background */
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+        50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); }
+    }
+    
+    /* Hero Section */
+    .hero {
+        min-height: 95vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        margin: -3rem -2rem 4rem;
+        padding: 6rem 2rem;
+    }
+    
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        color: white;
+    }
+    
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(20px);
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.6s ease-out, glow 3s ease-in-out infinite;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .hero h1 .highlight {
+        background: linear-gradient(120deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+    
+    .hero p {
+        font-size: 1.5rem;
+        opacity: 0.98;
+        margin-bottom: 3rem;
+        line-height: 1.7;
+        animation: fadeInUp 0.6s ease-out 0.4s backwards;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.6s ease-out 0.6s backwards;
+    }
+    
+    .hero-buttons .btn {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        border-radius: 50px;
+    }
+    
+    .btn-white {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        font-size: 1.15rem;
+        padding: 1.2rem 3rem;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-white::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.1);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-white:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-white:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 3px solid white;
+        backdrop-filter: blur(10px);
+        font-size: 1.15rem;
+        padding: 1.2rem 3rem;
+        font-weight: 700;
+    }
+    
+    .btn-outline:hover {
+        background: white;
+        color: var(--primary);
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 20px 50px rgba(255, 255, 255, 0.3);
+    }
+    
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 3rem;
+        margin-top: 5rem;
+        animation: fadeInUp 0.6s ease-out 0.8s backwards;
+    }
+    
+    .stat {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s;
+    }
+    
+    .stat:hover {
+        transform: translateY(-10px) scale(1.05);
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 900;
+        font-family: 'Space Grotesk', sans-serif;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* Features Section */
+    .section {
+        margin: 6rem 0;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    
+    .section-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+    
+    .section-header p {
+        font-size: 1.2rem;
+        color: var(--gray);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+        background-size: 300% 100%;
+        animation: gradient 3s ease infinite;
+        transform: scaleX(0);
+        transition: transform 0.5s;
+    }
+    
+    .feature-card::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.6s;
+        border-radius: 50%;
+    }
+    
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .feature-card:hover::after {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-20px) rotateX(5deg) scale(1.03);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.3);
+        border-color: rgba(99, 102, 241, 0.3);
+        background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+    }
+    
+    .feature-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background-size: 200% 200%;
+        animation: gradient 4s ease infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-style: preserve-3d;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: translateZ(30px) rotateY(15deg) scale(1.15);
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.6);
+        animation: float3d 3s ease-in-out infinite;
+    }
+    
+    .feature-card h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+    
+    .feature-card p {
+        color: var(--gray);
+        line-height: 1.7;
+    }
+    
+    /* Models Section */
+    .models-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+    
+    .model-card {
+        background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 15px 50px rgba(139, 92, 246, 0.15);
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+    
+    .model-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        background-size: 200% 100%;
+        animation: gradient 3s ease infinite;
+    }
+    
+    .model-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    
+    .model-card:hover::after {
+        opacity: 1;
+    }
+    
+    .model-card:hover {
+        transform: translateY(-15px) rotateX(5deg) scale(1.05);
+        border-color: rgba(139, 92, 246, 0.4);
+        box-shadow: 0 25px 70px rgba(139, 92, 246, 0.3);
+        background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+    }
+    
+    .model-card h4 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .model-params {
+        color: var(--gray);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .model-accuracy {
+        font-size: 3.5rem;
+        font-weight: 900;
+        font-family: 'Space Grotesk', sans-serif;
+        background: linear-gradient(135deg, #10b981, #059669, #047857);
+        background-size: 200% 200%;
+        animation: gradient 3s ease infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 1.5rem 0;
+        text-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        transition: all 0.5s;
+    }
+    
+    .model-card:hover .model-accuracy {
+        transform: scale(1.1) translateZ(20px);
+        text-shadow: 0 6px 30px rgba(16, 185, 129, 0.5);
+    }
+    
+    .model-speed {
+        display: inline-block;
+        background: var(--bg);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin: 1rem 0;
+    }
+    
+    .model-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--success);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background-size: 200% 200%;
+        animation: gradient 8s ease infinite;
+        color: white;
+        padding: 6rem 3rem;
+        border-radius: 32px;
+        text-align: center;
+        margin: 6rem 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4);
+        transform-style: preserve-3d;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+        animation: float3d 6s ease-in-out infinite;
+    }
+    
+    .cta-section::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float3d 8s ease-in-out infinite reverse;
+    }
+    
+    .cta-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        margin-bottom: 2.5rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Testimonials */
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .testimonial-card {
+        background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+        padding: 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 15px 50px rgba(236, 72, 153, 0.12);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-12px) rotateX(3deg) scale(1.02);
+        box-shadow: 0 25px 70px rgba(236, 72, 153, 0.2);
+        border-color: rgba(236, 72, 153, 0.3);
+        background: linear-gradient(135deg, #ffffff 0%, #fef3f2 100%);
+    }
+    
+    .testimonial-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+        font-style: italic;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    .author-info h5 {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.2rem;
+    }
+    
+    .author-info p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-star"></i> ⚡ TRUSTED BY 1000+ ENGINEERS WORLDWIDE ⚡
+        </div>
+        
+        <h1>
+            <span class="highlight">AI-Powered</span><br>
+            Crack Detection for<br>
+            <span class="highlight">Concrete Structures</span>
+        </h1>
+        
+        <p>
+            Detect structural defects with <strong>97% accuracy</strong> using state-of-the-art deep learning.<br>
+            Fast, reliable, and trusted by infrastructure professionals globally.
+        </p>
+        
+        <div class="hero-buttons">
+            <a href="/register" class="btn btn-white">
+                <i class="fas fa-rocket"></i> Get Started Free
+            </a>
+            <a href="/predict-page" class="btn btn-outline">
+                <i class="fas fa-upload"></i> Try It Now
+            </a>
+        </div>
+        
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">97%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">50ms</div>
+                <div class="stat-label">Speed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">56K+</div>
+                <div class="stat-label">Images</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Models</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge">✨ Features</div>
+        <h2>Everything You Need for Crack Detection</h2>
+        <p>Powerful features designed for professionals who demand accuracy and speed</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>Multiple AI Models</h3>
+            <p>Choose from ResNet-18, ResNet-50, EfficientNet-B0, and VGG-16. Each optimized for different use cases.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Real-time Detection</h3>
+            <p>Get instant predictions with confidence scores in under 50ms. Perfect for field inspections.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Advanced Analytics</h3>
+            <p>Track prediction history, analyze trends, and generate comprehensive reports.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h3>REST API Access</h3>
+            <p>Integrate crack detection into your existing workflows with our powerful API.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <h3>Batch Processing</h3>
+            <p>Process hundreds of images simultaneously for large-scale infrastructure assessments.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Enterprise Security</h3>
+            <p>Bank-level encryption, SOC 2 compliance, and dedicated support for enterprise clients.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Models Section -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge">🤖 AI Models</div>
+        <h2>State-of-the-Art CNN Architectures</h2>
+        <p>Choose the perfect model for your accuracy and speed requirements</p>
+    </div>
+    
+    <div class="models-grid">
+        {% for key, model in models.items() %}
+        <div class="model-card">
+            {% if model.free %}
+            <div class="model-badge">FREE</div>
+            {% endif %}
+            <h4>{{ model.name }}</h4>
+            <p class="model-params">{{ model.params }} parameters</p>
+            <div class="model-accuracy">{{ model.accuracy }}</div>
+            <div class="model-speed">
+                <i class="fas fa-tachometer-alt"></i> {{ model.speed }}
+            </div>
+            <p style="color: var(--gray); margin-top: 1rem;">{{ model.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge">💬 Testimonials</div>
+        <h2>Trusted by Industry Leaders</h2>
+        <p>See what infrastructure professionals are saying about CrackDetect AI</p>
+    </div>
+    
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="testimonial-text">
+                "CrackDetect AI has revolutionized our bridge inspection process. We've reduced inspection time by 60% while improving accuracy."
+            </div>
+            <div class="testimonial-author">
+                <div class="author-avatar">JD</div>
+                <div class="author-info">
+                    <h5>John Davis</h5>
+                    <p>Chief Engineer, State DOT</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card">
+            <div class="testimonial-text">
+                "The API integration was seamless. We now have automated crack detection in our mobile inspection app."
+            </div>
+            <div class="testimonial-author">
+                <div class="author-avatar">SM</div>
+                <div class="author-info">
+                    <h5>Sarah Martinez</h5>
+                    <p>CTO, InfrastructureTech</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card">
+            <div class="testimonial-text">
+                "97% accuracy is no joke. This tool has become essential for our structural health monitoring projects."
+            </div>
+            <div class="testimonial-author">
+                <div class="author-avatar">RK</div>
+                <div class="author-info">
+                    <h5>Dr. Robert Kim</h5>
+                    <p>Professor, Civil Engineering</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+    <h2>Ready to Get Started?</h2>
+    <p>Join thousands of engineers using AI to monitor structural health. Start with our free plan today.</p>
+    <div class="hero-buttons">
+        <a href="/register" class="btn btn-white">
+            <i class="fas fa-rocket"></i> Start Free Trial
+        </a>
+        <a href="/pricing" class="btn btn-outline">
+            <i class="fas fa-tag"></i> View Pricing
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 3D Card Tilt Effect (Framer Motion style)
+    document.querySelectorAll('.feature-card, .model-card, .testimonial-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            
+            card.style.transform = `
+                translateY(-20px) 
+                rotateX(${rotateX}deg) 
+                rotateY(${rotateY}deg) 
+                scale(1.03)
+            `;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) scale(1)';
+                }, index * 100);
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.feature-card, .model-card, .testimonial-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(50px) scale(0.95)';
+        card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        observer.observe(card);
+    });
+    
+    // Add floating particles to hero
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 5 + 2}px;
+                height: ${Math.random() * 5 + 2}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.6 + 0.3});
+                border-radius: 50%;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                animation: float3d ${Math.random() * 10 + 5}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 5}s;
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            `;
+            hero.appendChild(particle);
+        }
+    }
+    
+    // Parallax effect on scroll
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.hero-content, .section-header');
+        
+        parallaxElements.forEach(el => {
+            const speed = 0.5;
+            el.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+    });
+    
+    // Add glow effect to buttons on hover
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.boxShadow = '0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(139, 92, 246, 0.4)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.boxShadow = '';
+        });
+    });
+</script>
+{% endblock %}

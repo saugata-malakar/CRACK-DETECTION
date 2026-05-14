@@ -1,0 +1,23 @@
+# Flask Web Framework
+Flask>=2.3.0
+Werkzeug>=2.3.0
+
+# Deep Learning
+torch>=1.9.0
+torchvision>=0.10.0
+
+# Image Processing
+Pillow>=8.0.0
+
+# Google OAuth
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.1.1
+
+# HTTP Requests (for GitHub OAuth)
+requests>=2.31.0
+
+# Optional but recommended
+numpy>=1.19.0
+matplotlib>=3.3.0
+scikit-learn>=0.24.0

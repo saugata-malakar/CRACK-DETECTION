@@ -1,0 +1,439 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Site Details - CrackDetect AI{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-20">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-6 py-12">
+        <!-- Back Button -->
+        <div class="mb-6">
+            <a href="#" onclick="goBack()" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Project
+            </a>
+        </div>
+
+        <!-- Site Header -->
+        <div id="siteHeader" class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 mb-8">
+            <!-- Site details will be loaded here -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            <button onclick="showAddStructureModal()" class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>Add Structure
+            </button>
+            <button onclick="startInspection()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-camera mr-2"></i>Start Inspection
+            </button>
+            <button onclick="generateSiteReport()" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-file-pdf mr-2"></i>Generate Report
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-8">
+            <div class="flex space-x-1 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-1">
+                <button onclick="showTab('structures')" id="structuresTab" class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button active">
+                    Structures
+                </button>
+                <button onclick="showTab('inspections')" id="inspectionsTab" class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button">
+                    Inspections
+                </button>
+                <button onclick="showTab('map')" id="mapTab" class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button">
+                    Location
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="structuresContent" class="tab-content">
+            <div id="structuresGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Structures will be loaded here -->
+            </div>
+            <div id="structuresEmpty" class="text-center py-16 hidden">
+                <div class="text-6xl text-gray-400 mb-4">🏗️</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Structures Yet</h3>
+                <p class="text-gray-400 mb-6">Add structures to organize your inspections</p>
+                <button onclick="showAddStructureModal()" class="bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold py-3 px-6 rounded-full">
+                    Add Structure
+                </button>
+            </div>
+        </div>
+
+        <div id="inspectionsContent" class="tab-content hidden">
+            <div id="inspectionsList" class="space-y-4">
+                <!-- Inspections will be loaded here -->
+            </div>
+        </div>
+
+        <div id="mapContent" class="tab-content hidden">
+            <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8">
+                <h3 class="text-2xl font-bold text-white mb-6">Site Location</h3>
+                <div id="mapContainer" class="h-96 bg-gray-800 rounded-lg flex items-center justify-center">
+                    <div class="text-center text-gray-400">
+                        <i class="fas fa-map-marker-alt text-4xl mb-4"></i>
+                        <p>Map integration coming soon</p>
+                        <p class="text-sm mt-2">GPS coordinates will be displayed here</p>
+                    </div>
+                </div>
+                <div id="locationInfo" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Location info will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Structure Modal -->
+    <div id="addStructureModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Add New Structure</h3>
+            
+            <form id="addStructureForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Structure Name</label>
+                    <input type="text" id="structureName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="e.g., Column A1" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Structure Type</label>
+                    <select id="structureType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+                        <option value="">Select Type</option>
+                        <option value="Column">Column</option>
+                        <option value="Beam">Beam</option>
+                        <option value="Wall">Wall</option>
+                        <option value="Slab">Slab</option>
+                        <option value="Foundation">Foundation</option>
+                        <option value="Joint">Joint</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                    <textarea id="structureDescription" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Optional description"></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="hideAddStructureModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">Add Structure</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+.tab-button.active {
+    background: rgba(59, 130, 246, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.structure-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.structure-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+</style>
+
+<script>
+let currentSite = null;
+let siteId = null;
+
+// Get site ID from URL
+document.addEventListener('DOMContentLoaded', function() {
+    const pathParts = window.location.pathname.split('/');
+    siteId = pathParts[pathParts.length - 1];
+    loadSiteDetails();
+    loadStructures();
+    loadInspections();
+});
+
+function loadSiteDetails() {
+    fetch(`/api/sites/${siteId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                currentSite = data.site;
+                renderSiteHeader();
+                renderLocationInfo();
+            } else {
+                console.error('Failed to load site:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading site:', error);
+        });
+}
+
+function renderSiteHeader() {
+    const header = document.getElementById('siteHeader');
+    header.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-2">${currentSite.name}</h1>
+                <p class="text-xl text-gray-300">📍 ${currentSite.address || 'No address specified'}</p>
+            </div>
+            <div class="text-right">
+                <span class="px-4 py-2 bg-green-600 text-white rounded-full text-lg font-medium">${currentSite.site_type}</span>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-400">${currentSite.structure_count || 0}</div>
+                <div class="text-gray-300">Structures</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-green-400">${currentSite.inspection_count || 0}</div>
+                <div class="text-gray-300">Inspections</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-yellow-400">${currentSite.health_score || 'N/A'}%</div>
+                <div class="text-gray-300">Health Score</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-purple-400">${currentSite.last_inspection ? new Date(currentSite.last_inspection).toLocaleDateString() : 'Never'}</div>
+                <div class="text-gray-300">Last Inspection</div>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-sm text-gray-400">
+            Created: ${new Date(currentSite.created_at).toLocaleDateString()} | 
+            Project: ${currentSite.project_name || 'Unknown'}
+        </div>
+    `;
+}
+
+function renderLocationInfo() {
+    const locationInfo = document.getElementById('locationInfo');
+    locationInfo.innerHTML = `
+        <div class="bg-white bg-opacity-5 rounded-lg p-4">
+            <h4 class="text-lg font-bold text-white mb-3">Address</h4>
+            <p class="text-gray-300">${currentSite.address || 'No address specified'}</p>
+        </div>
+        <div class="bg-white bg-opacity-5 rounded-lg p-4">
+            <h4 class="text-lg font-bold text-white mb-3">GPS Coordinates</h4>
+            <p class="text-gray-300">
+                ${currentSite.gps_lat && currentSite.gps_lon 
+                    ? `Lat: ${currentSite.gps_lat}, Lon: ${currentSite.gps_lon}` 
+                    : 'No GPS coordinates specified'}
+            </p>
+        </div>
+    `;
+}
+
+function showTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + 'Content').classList.remove('hidden');
+    document.getElementById(tabName + 'Tab').classList.add('active');
+}
+
+function loadStructures() {
+    fetch(`/api/sites/${siteId}/structures`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderStructures(data.structures);
+            }
+        })
+        .catch(error => console.error('Error loading structures:', error));
+}
+
+function renderStructures(structures) {
+    const grid = document.getElementById('structuresGrid');
+    const empty = document.getElementById('structuresEmpty');
+    
+    if (structures.length === 0) {
+        grid.style.display = 'none';
+        empty.classList.remove('hidden');
+        return;
+    }
+    
+    grid.style.display = 'grid';
+    empty.classList.add('hidden');
+    
+    grid.innerHTML = structures.map(structure => `
+        <div class="structure-card rounded-lg p-6 cursor-pointer" onclick="viewStructure(${structure.id})">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white">${structure.name}</h3>
+                <span class="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">${structure.structure_type}</span>
+            </div>
+            
+            <p class="text-gray-300 mb-4">${structure.description || 'No description'}</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-400">${structure.inspection_count || 0}</div>
+                    <div class="text-sm text-gray-400">Inspections</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-400">${structure.health_score || 'N/A'}%</div>
+                    <div class="text-sm text-gray-400">Health</div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-400">Last: ${structure.last_inspection ? new Date(structure.last_inspection).toLocaleDateString() : 'Never'}</span>
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-${structure.health_score >= 80 ? 'green' : structure.health_score >= 60 ? 'yellow' : 'red'}-500 rounded-full"></span>
+                    <span class="text-sm text-gray-300">${structure.health_score >= 80 ? 'Good' : structure.health_score >= 60 ? 'Fair' : 'Poor'}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadInspections() {
+    fetch(`/api/sites/${siteId}/inspections`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderInspections(data.inspections);
+            }
+        })
+        .catch(error => console.error('Error loading inspections:', error));
+}
+
+function renderInspections(inspections) {
+    const list = document.getElementById('inspectionsList');
+    
+    if (inspections.length === 0) {
+        list.innerHTML = `
+            <div class="text-center py-16">
+                <div class="text-6xl text-gray-400 mb-4">📋</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Inspections Yet</h3>
+                <p class="text-gray-400 mb-6">Start your first inspection of this site</p>
+                <button onclick="startInspection()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-full">
+                    Start Inspection
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    list.innerHTML = inspections.map(inspection => `
+        <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden">
+                        ${inspection.image_path ? `<img src="${inspection.image_path}" alt="Inspection" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>'}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">${inspection.structure_name || 'Unknown Structure'}</h3>
+                        <p class="text-gray-300">${inspection.prediction} (${inspection.confidence}% confidence)</p>
+                        <p class="text-sm text-gray-400">${new Date(inspection.timestamp).toLocaleString()}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="px-3 py-1 bg-${inspection.severity === 'CRITICAL' ? 'red' : inspection.severity === 'HIGH' ? 'orange' : inspection.severity === 'MEDIUM' ? 'yellow' : 'green'}-600 text-white text-sm rounded-full">
+                        ${inspection.severity || 'SAFE'}
+                    </span>
+                    <p class="text-sm text-gray-400 mt-1">Model: ${inspection.model_used}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Modal functions
+function showAddStructureModal() {
+    document.getElementById('addStructureModal').classList.remove('hidden');
+}
+
+function hideAddStructureModal() {
+    document.getElementById('addStructureModal').classList.add('hidden');
+}
+
+function viewStructure(structureId) {
+    // Navigate to structure detail or show structure info
+    alert(`Structure ${structureId} details coming soon!`);
+}
+
+function startInspection() {
+    window.location.href = '/predict-page';
+}
+
+function generateSiteReport() {
+    window.open(`/reports/site/${siteId}/pdf`, '_blank');
+}
+
+function goBack() {
+    if (currentSite && currentSite.project_id) {
+        window.location.href = `/projects/${currentSite.project_id}`;
+    } else {
+        window.location.href = '/projects';
+    }
+}
+
+// Form submission
+document.getElementById('addStructureForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        site_id: siteId,
+        name: document.getElementById('structureName').value,
+        structure_type: document.getElementById('structureType').value,
+        description: document.getElementById('structureDescription').value
+    };
+    
+    fetch('/api/structures/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            hideAddStructureModal();
+            loadStructures();
+            loadSiteDetails(); // Refresh counts
+            document.getElementById('addStructureForm').reset();
+            alert('Structure added successfully!');
+        } else {
+            alert('Error adding structure: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error adding structure:', error);
+        alert('Error adding structure. Please try again.');
+    });
+});
+</script>
+{% endblock %}

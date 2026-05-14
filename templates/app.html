@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concrete Crack Detection - AI Powered</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+        
+        .result-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .prediction {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .prediction-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .prediction-label.cracked {
+            color: #ef4444;
+        }
+        
+        .prediction-label.non-cracked {
+            color: #10b981;
+        }
+        
+        .confidence {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 20px 0;
+        }
+        
+        .confidence.cracked {
+            color: #ef4444;
+        }
+        
+        .confidence.non-cracked {
+            color: #10b981;
+        }
+        
+        .probabilities {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .prob-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .prob-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .prob-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .prob-value.cracked {
+            color: #ef4444;
+        }
+        
+        .prob-value.non-cracked {
+            color: #10b981;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .new-prediction {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Concrete Crack Detection</h1>
+        <p class="subtitle">AI-Powered Structural Health Monitoring</p>
+        
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text">Click to upload or drag & drop</div>
+            <div class="upload-hint">Supports: JPG, PNG (Max 16MB)</div>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing image...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <img id="resultImage" class="result-image" alt="Uploaded image">
+            
+            <div class="prediction">
+                <div class="prediction-label" id="predictionLabel">Prediction</div>
+                <div class="confidence" id="confidence">0%</div>
+                <p style="color: #666;">Confidence Score</p>
+            </div>
+            
+            <div class="probabilities">
+                <div class="prob-card">
+                    <div class="prob-label">Non-cracked</div>
+                    <div class="prob-value non-cracked" id="probNonCracked">0%</div>
+                </div>
+                <div class="prob-card">
+                    <div class="prob-label">Cracked</div>
+                    <div class="prob-value cracked" id="probCracked">0%</div>
+                </div>
+            </div>
+            
+            <div class="new-prediction">
+                <button class="btn" onclick="resetUpload()">Analyze Another Image</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const resultContainer = document.getElementById('resultContainer');
+        
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showError('Please upload an image file');
+                return;
+            }
+            
+            // Validate file size (16MB)
+            if (file.size > 16 * 1024 * 1024) {
+                showError('File size must be less than 16MB');
+                return;
+            }
+            
+            // Upload and predict
+            uploadAndPredict(file);
+        }
+        
+        async function uploadAndPredict(file) {
+            // Hide error and result
+            error.classList.remove('show');
+            resultContainer.classList.remove('show');
+            
+            // Show loading
+            loading.classList.add('show');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult(data);
+                } else {
+                    showError(data.error || 'Prediction failed');
+                }
+            } catch (err) {
+                showError('Network error: ' + err.message);
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+        
+        function displayResult(data) {
+            // Set image
+            document.getElementById('resultImage').src = data.image;
+            
+            // Set prediction
+            const predictionLabel = document.getElementById('predictionLabel');
+            predictionLabel.textContent = data.prediction;
+            predictionLabel.className = 'prediction-label ' + 
+                (data.prediction === 'Cracked' ? 'cracked' : 'non-cracked');
+            
+            // Set confidence
+            const confidence = document.getElementById('confidence');
+            confidence.textContent = data.confidence + '%';
+            confidence.className = 'confidence ' + 
+                (data.prediction === 'Cracked' ? 'cracked' : 'non-cracked');
+            
+            // Set probabilities
+            document.getElementById('probNonCracked').textContent = 
+                data.probabilities['Non-cracked'] + '%';
+            document.getElementById('probCracked').textContent = 
+                data.probabilities['Cracked'] + '%';
+            
+            // Show result
+            resultContainer.classList.add('show');
+        }
+        
+        function showError(message) {
+            error.textContent = '❌ ' + message;
+            error.classList.add('show');
+        }
+        
+        function resetUpload() {
+            fileInput.value = '';
+            resultContainer.classList.remove('show');
+            error.classList.remove('show');
+        }
+    </script>
+</body>
+</html>

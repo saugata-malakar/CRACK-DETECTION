@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Compare Models{% endblock %}
+{% block extra_css %}
+<style>
+    .page-title { text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: #667eea; }
+    .upload-area { border: 3px dashed #667eea; border-radius: 15px; padding: 60px 20px; text-align: center; cursor: pointer; background: white; }
+    .upload-area:hover { border-color: #764ba2; background: #f8f9ff; }
+    #fileInput { display: none; }
+    .loading { display: none; text-align: center; margin: 30px 0; }
+    .loading.show { display: block; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+    .model-result { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+    .model-result h3 { color: #667eea; margin-bottom: 20px; }
+    .prediction-big { font-size: 2rem; font-weight: 700; margin: 20px 0; }
+    .prediction-big.cracked { color: #ef4444; }
+    .prediction-big.non-cracked { color: #10b981; }
+    .result-image { width: 100%; max-width: 500px; margin: 30px auto; display: block; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+</style>
+{% endblock %}
+{% block content %}
+<h1 class="page-title">⚖️ Compare All Models</h1>
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="upload-area" id="uploadArea">
+        <div style="font-size: 4rem; margin-bottom: 20px;">📸</div>
+        <div style="font-size: 1.2rem; margin-bottom: 10px;">Upload image to compare all models</div>
+        <div style="color: #999;">Supports: JPG, PNG (Max 16MB)</div>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Comparing across all models...</p>
+    </div>
+    <div id="resultImage" style="display: none; text-align: center; margin-top: 30px;">
+        <img id="uploadedImage" class="result-image">
+    </div>
+    <div class="results-grid" id="resultsGrid"></div>
+</div>
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const loading = document.getElementById('loading');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const resultImage = document.getElementById('resultImage');
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+    
+    async function handleFile(file) {
+        loading.classList.add('show');
+        resultsGrid.innerHTML = '';
+        resultImage.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const response = await fetch('/api/compare', { method: 'POST', body: formData });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('uploadedImage').src = data.image;
+                resultImage.style.display = 'block';
+                
+                data.results.forEach(result => {
+                    const card = document.createElement('div');
+                    card.className = 'model-result';
+                    card.innerHTML = `
+                        <h3>${result.model}</h3>
+                        <div style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">
+                            Accuracy: ${result.accuracy} | Speed: ${result.speed}
+                        </div>
+                        <div class="prediction-big ${result.prediction === 'Cracked' ? 'cracked' : 'non-cracked'}">
+                            ${result.prediction}
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">
+                            ${result.confidence}%
+                        </div>
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Non-cracked:</span>
+                                <strong>${result.probabilities['Non-cracked']}%</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Cracked:</span>
+                                <strong>${result.probabilities['Cracked']}%</strong>
+                            </div>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(card);
+                });
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        } finally {
+            loading.classList.remove('show');
+        }
+    }
+</script>
+{% endblock %}

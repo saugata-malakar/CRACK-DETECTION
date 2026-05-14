@@ -1,0 +1,497 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Pricing - CrackDetect AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pricing-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 2rem 0;
+    }
+    
+    .pricing-header h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .pricing-header p {
+        font-size: 1.3rem;
+        color: var(--gray);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .pricing-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .toggle-label {
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .pricing-card {
+        background: white;
+        padding: 3rem 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        position: relative;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+    }
+    
+    .pricing-card.featured {
+        border-color: var(--primary);
+        box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .plan-name {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .plan-description {
+        color: var(--gray);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+    
+    .plan-price {
+        margin-bottom: 2rem;
+    }
+    
+    .price-amount {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--dark);
+        line-height: 1;
+    }
+    
+    .price-currency {
+        font-size: 2rem;
+        vertical-align: super;
+    }
+    
+    .price-period {
+        color: var(--gray);
+        font-size: 1.1rem;
+    }
+    
+    .plan-features {
+        list-style: none;
+        margin-bottom: 2.5rem;
+    }
+    
+    .plan-features li {
+        padding: 0.75rem 0;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .plan-features i {
+        color: var(--success);
+        font-size: 1.1rem;
+    }
+    
+    .plan-cta {
+        width: 100%;
+        padding: 1.1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .plan-cta.primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+    
+    .plan-cta.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    }
+    
+    .plan-cta.secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+    
+    .plan-cta.secondary:hover {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .comparison-section {
+        margin-top: 6rem;
+        background: white;
+        padding: 4rem 3rem;
+        border-radius: 24px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .comparison-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .comparison-header h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .comparison-table th {
+        padding: 1.5rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid var(--bg);
+    }
+    
+    .comparison-table td {
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid var(--bg);
+    }
+    
+    .comparison-table tr:hover {
+        background: var(--bg);
+    }
+    
+    .check-icon {
+        color: var(--success);
+        font-size: 1.3rem;
+    }
+    
+    .cross-icon {
+        color: var(--gray-light);
+        font-size: 1.3rem;
+    }
+    
+    .faq-section {
+        margin-top: 6rem;
+    }
+    
+    .faq-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .faq-header h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+    }
+    
+    .faq-item {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .faq-question {
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .faq-answer {
+        color: var(--gray);
+        line-height: 1.7;
+    }
+    
+    @media (max-width: 768px) {
+        .pricing-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .comparison-table {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-header">
+    <h1>Simple, Transparent Pricing</h1>
+    <p>Choose the perfect plan for your crack detection needs. All plans include our core AI models.</p>
+</div>
+
+<div class="pricing-grid">
+    {% for key, plan in plans.items() %}
+    <div class="pricing-card {% if key == 'pro' %}featured{% endif %}">
+        {% if key == 'pro' %}
+        <div class="featured-badge">⭐ Most Popular</div>
+        {% endif %}
+        
+        <div class="plan-name">{{ plan.name }}</div>
+        <div class="plan-description">
+            {% if key == 'free' %}
+            Perfect for trying out our platform
+            {% elif key == 'pro' %}
+            For professional engineers and teams
+            {% else %}
+            For large organizations
+            {% endif %}
+        </div>
+        
+        <div class="plan-price">
+            <span class="price-amount">
+                <span class="price-currency">$</span>{{ plan.price }}
+            </span>
+            <span class="price-period">/month</span>
+        </div>
+        
+        <ul class="plan-features">
+            <li>
+                <i class="fas fa-check-circle"></i>
+                <span>
+                    {% if plan.predictions_per_month == 'Unlimited' %}
+                    Unlimited predictions
+                    {% else %}
+                    {{ plan.predictions_per_month }} predictions/month
+                    {% endif %}
+                </span>
+            </li>
+            {% for feature in plan.features %}
+            <li>
+                <i class="fas fa-check-circle"></i>
+                <span>{{ feature }}</span>
+            </li>
+            {% endfor %}
+            <li>
+                <i class="fas fa-check-circle"></i>
+                <span>{{ plan.models|length }} AI models</span>
+            </li>
+        </ul>
+        
+        <a href="{% if session.user_id %}/dashboard{% else %}/register{% endif %}" 
+           class="plan-cta {% if key == 'pro' %}primary{% else %}secondary{% endif %}">
+            {% if key == 'free' %}
+            Get Started Free
+            {% else %}
+            Start Free Trial
+            {% endif %}
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="comparison-section">
+    <div class="comparison-header">
+        <h2>Feature Comparison</h2>
+        <p style="color: var(--gray); font-size: 1.1rem;">See what's included in each plan</p>
+    </div>
+    
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th style="text-align: center;">Free</th>
+                <th style="text-align: center;">Professional</th>
+                <th style="text-align: center;">Enterprise</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Monthly Predictions</strong></td>
+                <td style="text-align: center;">50</td>
+                <td style="text-align: center;">1,000</td>
+                <td style="text-align: center;">Unlimited</td>
+            </tr>
+            <tr>
+                <td><strong>ResNet-18 Model</strong></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>EfficientNet-B0 Model</strong></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>ResNet-50 Model</strong></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>VGG-16 Model</strong></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>API Access</strong></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>Batch Processing</strong></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>History Retention</strong></td>
+                <td style="text-align: center;">7 days</td>
+                <td style="text-align: center;">90 days</td>
+                <td style="text-align: center;">Unlimited</td>
+            </tr>
+            <tr>
+                <td><strong>Custom Models</strong></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-times cross-icon"></i></td>
+                <td style="text-align: center;"><i class="fas fa-check check-icon"></i></td>
+            </tr>
+            <tr>
+                <td><strong>Support</strong></td>
+                <td style="text-align: center;">Community</td>
+                <td style="text-align: center;">Priority</td>
+                <td style="text-align: center;">Dedicated</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="faq-section">
+    <div class="faq-header">
+        <h2>Frequently Asked Questions</h2>
+    </div>
+    
+    <div class="faq-grid">
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                Can I change plans later?
+            </div>
+            <div class="faq-answer">
+                Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                What happens if I exceed my limit?
+            </div>
+            <div class="faq-answer">
+                You'll be notified when you're approaching your limit. You can upgrade your plan or wait until the next billing cycle.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                Is there a free trial?
+            </div>
+            <div class="faq-answer">
+                Yes! All paid plans come with a 14-day free trial. No credit card required to start.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                How accurate are the models?
+            </div>
+            <div class="faq-answer">
+                Our models achieve 96-98% accuracy on the SDNET2018 dataset with over 56,000 images. Results may vary based on image quality.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                Can I use the API?
+            </div>
+            <div class="faq-answer">
+                API access is available on Professional and Enterprise plans. We provide comprehensive documentation and SDKs.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                What payment methods do you accept?
+            </div>
+            <div class="faq-answer">
+                We accept all major credit cards, PayPal, and wire transfers for Enterprise plans. All payments are secure and encrypted.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+# Ignore large files and folders
+Decks/
+Pavements/
+Walls/
+checkpoints/
+checkpoints_demo/
+data_splits/
+evaluation_results/
+__pycache__/
+*.pyc
+*.pth
+*.pt
+*.png
+*.jpg
+.git/
+.vscode/
+*.log

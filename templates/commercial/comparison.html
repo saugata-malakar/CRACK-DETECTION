@@ -1,0 +1,598 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Before/After Comparison - CrackDetect AI{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-20">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-4 animate-fade-in">
+                Before/After Comparison
+            </h1>
+            <p class="text-xl text-gray-300 animate-fade-in-delay">
+                Track crack progression and deterioration over time
+            </p>
+        </div>
+
+        <!-- Comparison Selection -->
+        <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 mb-8">
+            <h3 class="text-2xl font-bold text-white mb-6">Select Inspections to Compare</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Before Inspection -->
+                <div>
+                    <label class="block text-white text-lg font-bold mb-4">Before (Earlier Inspection)</label>
+                    <select id="beforeInspection" class="w-full px-4 py-3 bg-white bg-opacity-20 border border-gray-300 rounded-lg text-white focus:outline-none focus:border-blue-500">
+                        <option value="">Select earlier inspection...</option>
+                    </select>
+                    <div id="beforePreview" class="mt-4 hidden">
+                        <div class="bg-white bg-opacity-5 rounded-lg p-4">
+                            <div class="flex items-center space-x-4">
+                                <img id="beforeImage" class="w-20 h-20 object-cover rounded-lg" src="" alt="Before">
+                                <div>
+                                    <p id="beforeDate" class="text-white font-medium"></p>
+                                    <p id="beforeResult" class="text-gray-300"></p>
+                                    <p id="beforeSeverity" class="text-sm"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- After Inspection -->
+                <div>
+                    <label class="block text-white text-lg font-bold mb-4">After (Later Inspection)</label>
+                    <select id="afterInspection" class="w-full px-4 py-3 bg-white bg-opacity-20 border border-gray-300 rounded-lg text-white focus:outline-none focus:border-blue-500">
+                        <option value="">Select later inspection...</option>
+                    </select>
+                    <div id="afterPreview" class="mt-4 hidden">
+                        <div class="bg-white bg-opacity-5 rounded-lg p-4">
+                            <div class="flex items-center space-x-4">
+                                <img id="afterImage" class="w-20 h-20 object-cover rounded-lg" src="" alt="After">
+                                <div>
+                                    <p id="afterDate" class="text-white font-medium"></p>
+                                    <p id="afterResult" class="text-gray-300"></p>
+                                    <p id="afterSeverity" class="text-sm"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button onclick="performComparison()" id="compareButton" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-balance-scale mr-2"></i>Compare Inspections
+                </button>
+            </div>
+        </div>
+
+        <!-- Comparison Results -->
+        <div id="comparisonResults" class="hidden">
+            <!-- Image Comparison -->
+            <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold text-white mb-6">Visual Comparison</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="text-center">
+                        <h4 class="text-lg font-bold text-white mb-4">Before</h4>
+                        <div class="bg-gray-800 rounded-lg overflow-hidden">
+                            <img id="beforeImageLarge" class="w-full h-64 object-cover" src="" alt="Before">
+                        </div>
+                        <div id="beforeDetails" class="mt-4 text-left">
+                            <!-- Before details will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h4 class="text-lg font-bold text-white mb-4">After</h4>
+                        <div class="bg-gray-800 rounded-lg overflow-hidden">
+                            <img id="afterImageLarge" class="w-full h-64 object-cover" src="" alt="After">
+                        </div>
+                        <div id="afterDetails" class="mt-4 text-left">
+                            <!-- After details will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold text-white mb-6">Analysis Results</h3>
+                
+                <div id="analysisContent">
+                    <!-- Analysis content will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold text-white mb-6">Recommendations</h3>
+                
+                <div id="recommendationsContent">
+                    <!-- Recommendations will be populated here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <button onclick="generateComparisonReport()" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300 mr-4">
+                    <i class="fas fa-file-pdf mr-2"></i>Generate Report
+                </button>
+                <button onclick="saveComparison()" class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-save mr-2"></i>Save Comparison
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent Comparisons -->
+        <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-8">
+            <h3 class="text-2xl font-bold text-white mb-6">Recent Comparisons</h3>
+            
+            <div id="recentComparisons" class="space-y-4">
+                <!-- Recent comparisons will be loaded here -->
+            </div>
+            
+            <div id="recentEmpty" class="text-center py-16 hidden">
+                <div class="text-6xl text-gray-400 mb-4">📊</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Comparisons Yet</h3>
+                <p class="text-gray-400">Your comparison history will appear here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+    animation: fade-in 0.8s ease-out 0.3s both;
+}
+
+.comparison-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.comparison-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+    height: 8px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-indicator {
+    position: absolute;
+    top: -2px;
+    width: 4px;
+    height: 12px;
+    background: white;
+    border-radius: 2px;
+    transition: left 0.3s ease;
+}
+</style>
+
+<script>
+let inspections = [];
+let currentComparison = null;
+
+// Load inspections on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadInspections();
+    loadRecentComparisons();
+});
+
+function loadInspections() {
+    fetch('/api/inspections')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                inspections = data.inspections.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                populateInspectionSelects();
+            } else {
+                console.error('Failed to load inspections:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading inspections:', error);
+        });
+}
+
+function populateInspectionSelects() {
+    const beforeSelect = document.getElementById('beforeInspection');
+    const afterSelect = document.getElementById('afterInspection');
+    
+    // Clear existing options
+    beforeSelect.innerHTML = '<option value="">Select earlier inspection...</option>';
+    afterSelect.innerHTML = '<option value="">Select later inspection...</option>';
+    
+    // Populate with inspections
+    inspections.forEach(inspection => {
+        const option = document.createElement('option');
+        option.value = inspection.id;
+        option.textContent = `${new Date(inspection.timestamp).toLocaleDateString()} - ${inspection.prediction} (${inspection.confidence}%)`;
+        
+        beforeSelect.appendChild(option.cloneNode(true));
+        afterSelect.appendChild(option);
+    });
+}
+
+// Handle inspection selection
+document.getElementById('beforeInspection').addEventListener('change', function() {
+    const inspectionId = this.value;
+    if (inspectionId) {
+        const inspection = inspections.find(i => i.id == inspectionId);
+        showInspectionPreview('before', inspection);
+        updateAfterOptions();
+    } else {
+        hideInspectionPreview('before');
+    }
+    updateCompareButton();
+});
+
+document.getElementById('afterInspection').addEventListener('change', function() {
+    const inspectionId = this.value;
+    if (inspectionId) {
+        const inspection = inspections.find(i => i.id == inspectionId);
+        showInspectionPreview('after', inspection);
+    } else {
+        hideInspectionPreview('after');
+    }
+    updateCompareButton();
+});
+
+function showInspectionPreview(type, inspection) {
+    const preview = document.getElementById(type + 'Preview');
+    const image = document.getElementById(type + 'Image');
+    const date = document.getElementById(type + 'Date');
+    const result = document.getElementById(type + 'Result');
+    const severity = document.getElementById(type + 'Severity');
+    
+    image.src = inspection.image || '/static/placeholder.jpg';
+    date.textContent = new Date(inspection.timestamp).toLocaleString();
+    result.textContent = `${inspection.prediction} (${inspection.confidence}% confidence)`;
+    severity.textContent = `Severity: ${inspection.severity || 'Unknown'}`;
+    severity.className = `text-sm text-${getSeverityColor(inspection.severity)}-400`;
+    
+    preview.classList.remove('hidden');
+}
+
+function hideInspectionPreview(type) {
+    document.getElementById(type + 'Preview').classList.add('hidden');
+}
+
+function updateAfterOptions() {
+    const beforeId = document.getElementById('beforeInspection').value;
+    const afterSelect = document.getElementById('afterInspection');
+    
+    if (!beforeId) return;
+    
+    const beforeInspection = inspections.find(i => i.id == beforeId);
+    const beforeDate = new Date(beforeInspection.timestamp);
+    
+    // Clear and repopulate after options with only later inspections
+    afterSelect.innerHTML = '<option value="">Select later inspection...</option>';
+    
+    inspections
+        .filter(i => new Date(i.timestamp) > beforeDate)
+        .forEach(inspection => {
+            const option = document.createElement('option');
+            option.value = inspection.id;
+            option.textContent = `${new Date(inspection.timestamp).toLocaleDateString()} - ${inspection.prediction} (${inspection.confidence}%)`;
+            afterSelect.appendChild(option);
+        });
+}
+
+function updateCompareButton() {
+    const beforeId = document.getElementById('beforeInspection').value;
+    const afterId = document.getElementById('afterInspection').value;
+    const button = document.getElementById('compareButton');
+    
+    button.disabled = !beforeId || !afterId;
+}
+
+function performComparison() {
+    const beforeId = document.getElementById('beforeInspection').value;
+    const afterId = document.getElementById('afterInspection').value;
+    
+    if (!beforeId || !afterId) {
+        alert('Please select both inspections to compare');
+        return;
+    }
+    
+    // Show loading state
+    const button = document.getElementById('compareButton');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing...';
+    button.disabled = true;
+    
+    fetch('/api/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            before_id: beforeId,
+            after_id: afterId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentComparison = data.comparison;
+            displayComparisonResults(data.comparison);
+            document.getElementById('comparisonResults').classList.remove('hidden');
+        } else {
+            alert('Error performing comparison: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error performing comparison:', error);
+        alert('Error performing comparison. Please try again.');
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function displayComparisonResults(comparison) {
+    // Update large images
+    document.getElementById('beforeImageLarge').src = comparison.before.image || '/static/placeholder.jpg';
+    document.getElementById('afterImageLarge').src = comparison.after.image || '/static/placeholder.jpg';
+    
+    // Update details
+    document.getElementById('beforeDetails').innerHTML = `
+        <div class="space-y-2">
+            <p class="text-white"><strong>Date:</strong> ${new Date(comparison.before.timestamp).toLocaleString()}</p>
+            <p class="text-white"><strong>Result:</strong> ${comparison.before.prediction}</p>
+            <p class="text-white"><strong>Confidence:</strong> ${comparison.before.confidence}%</p>
+            <p class="text-white"><strong>Severity:</strong> <span class="text-${getSeverityColor(comparison.before.severity)}-400">${comparison.before.severity || 'Unknown'}</span></p>
+        </div>
+    `;
+    
+    document.getElementById('afterDetails').innerHTML = `
+        <div class="space-y-2">
+            <p class="text-white"><strong>Date:</strong> ${new Date(comparison.after.timestamp).toLocaleString()}</p>
+            <p class="text-white"><strong>Result:</strong> ${comparison.after.prediction}</p>
+            <p class="text-white"><strong>Confidence:</strong> ${comparison.after.confidence}%</p>
+            <p class="text-white"><strong>Severity:</strong> <span class="text-${getSeverityColor(comparison.after.severity)}-400">${comparison.after.severity || 'Unknown'}</span></p>
+        </div>
+    `;
+    
+    // Update analysis
+    document.getElementById('analysisContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-${comparison.deterioration_score >= 70 ? 'red' : comparison.deterioration_score >= 40 ? 'yellow' : 'green'}-400">
+                    ${comparison.deterioration_score}%
+                </div>
+                <div class="text-gray-300">Deterioration Score</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-400">${comparison.time_difference_days}</div>
+                <div class="text-gray-300">Days Between</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-${comparison.risk_level === 'HIGH' ? 'red' : comparison.risk_level === 'MEDIUM' ? 'yellow' : 'green'}-400">
+                    ${comparison.risk_level}
+                </div>
+                <div class="text-gray-300">Risk Level</div>
+            </div>
+        </div>
+        
+        <div class="bg-white bg-opacity-5 rounded-lg p-6">
+            <h4 class="text-lg font-bold text-white mb-4">Detailed Analysis</h4>
+            <div class="space-y-3">
+                <p class="text-gray-300"><strong>Change in Prediction:</strong> ${comparison.prediction_change}</p>
+                <p class="text-gray-300"><strong>Confidence Change:</strong> ${comparison.confidence_change > 0 ? '+' : ''}${comparison.confidence_change}%</p>
+                <p class="text-gray-300"><strong>Severity Change:</strong> ${comparison.severity_change}</p>
+                <p class="text-gray-300"><strong>Overall Assessment:</strong> ${comparison.assessment}</p>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h4 class="text-lg font-bold text-white mb-4">Deterioration Progress</h4>
+            <div class="progress-bar">
+                <div class="progress-indicator" style="left: ${comparison.deterioration_score}%"></div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-400 mt-2">
+                <span>No Change</span>
+                <span>Moderate</span>
+                <span>Severe</span>
+            </div>
+        </div>
+    `;
+    
+    // Update recommendations
+    document.getElementById('recommendationsContent').innerHTML = `
+        <div class="space-y-4">
+            ${comparison.recommendations.map(rec => `
+                <div class="bg-white bg-opacity-5 rounded-lg p-4 border-l-4 border-${rec.priority === 'HIGH' ? 'red' : rec.priority === 'MEDIUM' ? 'yellow' : 'blue'}-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <h5 class="text-lg font-bold text-white">${rec.title}</h5>
+                        <span class="px-3 py-1 bg-${rec.priority === 'HIGH' ? 'red' : rec.priority === 'MEDIUM' ? 'yellow' : 'blue'}-600 text-white text-sm rounded-full">
+                            ${rec.priority}
+                        </span>
+                    </div>
+                    <p class="text-gray-300">${rec.description}</p>
+                    ${rec.timeline ? `<p class="text-sm text-gray-400 mt-2"><strong>Timeline:</strong> ${rec.timeline}</p>` : ''}
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function loadRecentComparisons() {
+    fetch('/api/comparisons/recent')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderRecentComparisons(data.comparisons);
+            }
+        })
+        .catch(error => console.error('Error loading recent comparisons:', error));
+}
+
+function renderRecentComparisons(comparisons) {
+    const container = document.getElementById('recentComparisons');
+    const empty = document.getElementById('recentEmpty');
+    
+    if (comparisons.length === 0) {
+        container.style.display = 'none';
+        empty.classList.remove('hidden');
+        return;
+    }
+    
+    container.style.display = 'block';
+    empty.classList.add('hidden');
+    
+    container.innerHTML = comparisons.map(comp => `
+        <div class="comparison-card rounded-lg p-6 cursor-pointer" onclick="loadComparison(${comp.id})">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Comparison #${comp.id}</h4>
+                    <p class="text-gray-300">${new Date(comp.created_at).toLocaleDateString()}</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-3 py-1 bg-${comp.risk_level === 'HIGH' ? 'red' : comp.risk_level === 'MEDIUM' ? 'yellow' : 'green'}-600 text-white text-sm rounded-full">
+                        ${comp.risk_level} Risk
+                    </span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <div class="text-xl font-bold text-blue-400">${comp.time_difference_days}</div>
+                    <div class="text-sm text-gray-400">Days Apart</div>
+                </div>
+                <div>
+                    <div class="text-xl font-bold text-${comp.deterioration_score >= 70 ? 'red' : comp.deterioration_score >= 40 ? 'yellow' : 'green'}-400">
+                        ${comp.deterioration_score}%
+                    </div>
+                    <div class="text-sm text-gray-400">Deterioration</div>
+                </div>
+                <div>
+                    <div class="text-xl font-bold text-purple-400">${comp.recommendation_count || 0}</div>
+                    <div class="text-sm text-gray-400">Recommendations</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadComparison(comparisonId) {
+    fetch(`/api/comparisons/${comparisonId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                currentComparison = data.comparison;
+                
+                // Set the selects to the comparison's inspections
+                document.getElementById('beforeInspection').value = data.comparison.before_id;
+                document.getElementById('afterInspection').value = data.comparison.after_id;
+                
+                // Show previews
+                const beforeInspection = inspections.find(i => i.id == data.comparison.before_id);
+                const afterInspection = inspections.find(i => i.id == data.comparison.after_id);
+                
+                if (beforeInspection) showInspectionPreview('before', beforeInspection);
+                if (afterInspection) showInspectionPreview('after', afterInspection);
+                
+                // Display results
+                displayComparisonResults(data.comparison);
+                document.getElementById('comparisonResults').classList.remove('hidden');
+                
+                // Scroll to results
+                document.getElementById('comparisonResults').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Error loading comparison: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading comparison:', error);
+            alert('Error loading comparison. Please try again.');
+        });
+}
+
+function generateComparisonReport() {
+    if (!currentComparison) {
+        alert('No comparison data available');
+        return;
+    }
+    
+    window.open(`/reports/comparison/${currentComparison.id}/pdf`, '_blank');
+}
+
+function saveComparison() {
+    if (!currentComparison) {
+        alert('No comparison data to save');
+        return;
+    }
+    
+    fetch('/api/comparisons/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentComparison)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Comparison saved successfully!');
+            loadRecentComparisons(); // Refresh recent comparisons
+        } else {
+            alert('Error saving comparison: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving comparison:', error);
+        alert('Error saving comparison. Please try again.');
+    });
+}
+
+function getSeverityColor(severity) {
+    switch(severity) {
+        case 'CRITICAL': return 'red';
+        case 'HIGH': return 'orange';
+        case 'MEDIUM': return 'yellow';
+        case 'LOW': return 'blue';
+        case 'SAFE': return 'green';
+        default: return 'gray';
+    }
+}
+</script>
+{% endblock %}

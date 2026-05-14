@@ -1,0 +1,30 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Core Flask
+Flask>=2.3.0
+Werkzeug>=2.3.0
+
+# Deep Learning (CPU only to save massive space on Vercel)
+torch>=1.9.0
+torchvision>=0.10.0
+
+# Image Processing
+Pillow>=8.0.0
+opencv-python-headless>=4.5.0
+
+# Google OAuth
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.1.1
+
+# HTTP Requests (for GitHub OAuth)
+requests>=2.31.0
+
+# PDF Generation
+reportlab>=3.6.0
+
+# Data Processing
+numpy>=1.19.0
+
+# Production Server
+gunicorn>=20.1.0

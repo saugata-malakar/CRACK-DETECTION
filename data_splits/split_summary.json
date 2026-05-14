@@ -1,0 +1,19 @@
+{
+  "seed": 42,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "test_ratio": 0.15,
+  "total_samples": 56092,
+  "train_samples": 39264,
+  "val_samples": 8414,
+  "test_samples": 8414,
+  "categories": [
+    "Decks",
+    "Pavements",
+    "Walls"
+  ],
+  "classes": [
+    "Cracked",
+    "Non-cracked"
+  ]
+}

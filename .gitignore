@@ -1,0 +1,6 @@
+.vercel
+.env*.local
+__pycache__/
+checkpoints/*.pth
+crack_detection.db
+*.pdf

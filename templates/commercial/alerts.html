@@ -1,0 +1,687 @@
+{% extends "commercial/base.html" %}
+
+{% block title %}Alerts - CrackDetect AI{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-20">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div
+            class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob">
+        </div>
+        <div
+            class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000">
+        </div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-4 animate-fade-in">
+                Alert Management
+            </h1>
+            <p class="text-xl text-gray-300 animate-fade-in-delay">
+                Monitor critical findings and configure notifications
+            </p>
+        </div>
+
+        <!-- Alert Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-red-600 bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-lg p-6 border border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-300 text-sm font-medium">Critical Alerts</p>
+                        <p id="criticalCount" class="text-3xl font-bold text-white">0</p>
+                    </div>
+                    <div class="text-red-400 text-3xl">🚨</div>
+                </div>
+            </div>
+
+            <div
+                class="bg-orange-600 bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-lg p-6 border border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-300 text-sm font-medium">High Priority</p>
+                        <p id="highCount" class="text-3xl font-bold text-white">0</p>
+                    </div>
+                    <div class="text-orange-400 text-3xl">⚠️</div>
+                </div>
+            </div>
+
+            <div
+                class="bg-yellow-600 bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-lg p-6 border border-yellow-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-300 text-sm font-medium">Medium Priority</p>
+                        <p id="mediumCount" class="text-3xl font-bold text-white">0</p>
+                    </div>
+                    <div class="text-yellow-400 text-3xl">⚡</div>
+                </div>
+            </div>
+
+            <div
+                class="bg-blue-600 bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-lg p-6 border border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-300 text-sm font-medium">Total Alerts</p>
+                        <p id="totalCount" class="text-3xl font-bold text-white">0</p>
+                    </div>
+                    <div class="text-blue-400 text-3xl">📊</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            <button onclick="showCreateRuleModal()"
+                class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>Create Alert Rule
+            </button>
+            <button onclick="testAlerts()"
+                class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-test-tube mr-2"></i>Test Alerts
+            </button>
+            <button onclick="markAllRead()"
+                class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-check-double mr-2"></i>Mark All Read
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-8">
+            <div class="flex space-x-1 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg p-1">
+                <button onclick="showTab('active')" id="activeTab"
+                    class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button active">
+                    Active Alerts
+                </button>
+                <button onclick="showTab('rules')" id="rulesTab"
+                    class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button">
+                    Alert Rules
+                </button>
+                <button onclick="showTab('history')" id="historyTab"
+                    class="flex-1 py-3 px-6 rounded-lg text-white font-medium transition-all duration-300 tab-button">
+                    History
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="activeContent" class="tab-content">
+            <div id="alertsList" class="space-y-4">
+                <!-- Active alerts will be loaded here -->
+            </div>
+            <div id="alertsEmpty" class="text-center py-16 hidden">
+                <div class="text-6xl text-gray-400 mb-4">🔔</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Active Alerts</h3>
+                <p class="text-gray-400 mb-6">All systems are running smoothly</p>
+                <button onclick="showCreateRuleModal()"
+                    class="bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold py-3 px-6 rounded-full">
+                    Create Alert Rule
+                </button>
+            </div>
+        </div>
+
+        <div id="rulesContent" class="tab-content hidden">
+            <div id="rulesList" class="space-y-4">
+                <!-- Alert rules will be loaded here -->
+            </div>
+        </div>
+
+        <div id="historyContent" class="tab-content hidden">
+            <div id="historyList" class="space-y-4">
+                <!-- Alert history will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Alert Rule Modal -->
+    <div id="createRuleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Create Alert Rule</h3>
+
+            <form id="createRuleForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Rule Name</label>
+                    <input type="text" id="ruleName"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g., Critical Crack Alert" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Trigger Condition</label>
+                    <select id="triggerCondition"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        required>
+                        <option value="">Select Condition</option>
+                        <option value="severity_threshold">Severity Threshold</option>
+                        <option value="confidence_threshold">Confidence Threshold</option>
+                        <option value="crack_width_threshold">Crack Width Threshold</option>
+                        <option value="multiple_cracks">Multiple Cracks Detected</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Threshold Value</label>
+                    <input type="number" id="thresholdValue"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g., 95 for confidence %" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Notification Method</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="emailNotification" class="mr-2">
+                            <span class="text-gray-700">Email Notification</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="smsNotification" class="mr-2">
+                            <span class="text-gray-700">SMS Notification</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="dashboardNotification" class="mr-2" checked>
+                            <span class="text-gray-700">Dashboard Alert</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Recipients (Email/Phone)</label>
+                    <textarea id="recipients"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        rows="3" placeholder="email1@company.com, +1234567890"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="hideCreateRuleModal()"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">Create
+                        Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes blob {
+        0% {
+            transform: translate(0px, 0px) scale(1);
+        }
+
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    }
+
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.8s ease-out;
+    }
+
+    .animate-fade-in-delay {
+        animation: fade-in 0.8s ease-out 0.3s both;
+    }
+
+    .tab-button.active {
+        background: rgba(59, 130, 246, 0.5);
+        backdrop-filter: blur(10px);
+    }
+
+    .alert-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .alert-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+</style>
+
+<script>
+    let alerts = [];
+    let alertRules = [];
+    let alertHistory = [];
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAlerts();
+        loadAlertRules();
+        loadAlertHistory();
+    });
+
+    function loadAlerts() {
+        fetch('/api/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alerts = data.alerts;
+                    updateAlertCounts();
+                    renderAlerts();
+                } else {
+                    console.error('Failed to load alerts:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading alerts:', error);
+            });
+    }
+
+    function updateAlertCounts() {
+        const critical = alerts.filter(a => a.severity === 'CRITICAL').length;
+        const high = alerts.filter(a => a.severity === 'HIGH').length;
+        const medium = alerts.filter(a => a.severity === 'MEDIUM').length;
+        const total = alerts.length;
+
+        document.getElementById('criticalCount').textContent = critical;
+        document.getElementById('highCount').textContent = high;
+        document.getElementById('mediumCount').textContent = medium;
+        document.getElementById('totalCount').textContent = total;
+    }
+
+    function renderAlerts() {
+        const list = document.getElementById('alertsList');
+        const empty = document.getElementById('alertsEmpty');
+
+        if (alerts.length === 0) {
+            list.style.display = 'none';
+            empty.classList.remove('hidden');
+            return;
+        }
+
+        list.style.display = 'block';
+        empty.classList.add('hidden');
+
+        list.innerHTML = alerts.map(alert => `
+        <div class="alert-card rounded-lg p-6 border-l-4 border-${getSeverityColor(alert.severity)}">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl">${getSeverityIcon(alert.severity)}</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">${alert.alert_type.replace('_', ' ')}</h3>
+                        <p class="text-gray-300">${alert.message}</p>
+                        <p class="text-sm text-gray-400 mt-1">
+                            ${alert.project_name ? `Project: ${alert.project_name}` : ''} 
+                            ${alert.site_name ? `| Site: ${alert.site_name}` : ''}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="px-3 py-1 bg-${getSeverityColor(alert.severity)} text-white text-sm rounded-full">
+                        ${alert.severity}
+                    </span>
+                    <p class="text-sm text-gray-400 mt-2">${new Date(alert.created_at).toLocaleString()}</p>
+                    <div class="mt-2 space-x-2">
+                        <button onclick="viewAlert(${alert.id})" class="text-blue-400 hover:text-blue-300 text-sm">View</button>
+                        <button onclick="dismissAlert(${alert.id})" class="text-gray-400 hover:text-gray-300 text-sm">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+            
+            ${alert.inspection_id ? `
+                <div class="mt-4 p-3 bg-white bg-opacity-5 rounded-lg">
+                    <p class="text-sm text-gray-300">
+                        <strong>Inspection ID:</strong> ${alert.inspection_id} | 
+                        <strong>Confidence:</strong> ${alert.confidence || 'N/A'}% |
+                        <strong>Location:</strong> ${alert.location || 'Unknown'}
+                    </p>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+    }
+
+    function loadAlertRules() {
+        fetch('/api/alert-rules')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alertRules = data.rules;
+                    renderAlertRules();
+                }
+            })
+            .catch(error => console.error('Error loading alert rules:', error));
+    }
+
+    function renderAlertRules() {
+        const list = document.getElementById('rulesList');
+
+        if (alertRules.length === 0) {
+            list.innerHTML = `
+            <div class="text-center py-16">
+                <div class="text-6xl text-gray-400 mb-4">⚙️</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Alert Rules</h3>
+                <p class="text-gray-400 mb-6">Create rules to automatically trigger alerts</p>
+                <button onclick="showCreateRuleModal()" class="bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold py-3 px-6 rounded-full">
+                    Create Rule
+                </button>
+            </div>
+        `;
+            return;
+        }
+
+        list.innerHTML = alertRules.map(rule => `
+        <div class="alert-card rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-white">${rule.name}</h3>
+                    <p class="text-gray-300">${rule.condition_type.replace('_', ' ')}: ${rule.threshold_value}</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-3 py-1 bg-${rule.is_active ? 'green' : 'gray'}-600 text-white text-sm rounded-full">
+                        ${rule.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                    <div class="mt-2 space-x-2">
+                        <button onclick="toggleRule(${rule.id})" class="text-blue-400 hover:text-blue-300 text-sm">
+                            ${rule.is_active ? 'Disable' : 'Enable'}
+                        </button>
+                        <button onclick="editRule(${rule.id})" class="text-yellow-400 hover:text-yellow-300 text-sm">Edit</button>
+                        <button onclick="deleteRule(${rule.id})" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-400">Notifications:</p>
+                    <p class="text-white">
+                        ${rule.email_enabled ? '📧 Email' : ''} 
+                        ${rule.sms_enabled ? '📱 SMS' : ''} 
+                        ${rule.dashboard_enabled ? '🖥️ Dashboard' : ''}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-gray-400">Recipients:</p>
+                    <p class="text-white">${rule.recipients || 'None'}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">Created:</p>
+                    <p class="text-white">${new Date(rule.created_at).toLocaleDateString()}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function loadAlertHistory() {
+        fetch('/api/alert-history')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alertHistory = data.history;
+                    renderAlertHistory();
+                }
+            })
+            .catch(error => console.error('Error loading alert history:', error));
+    }
+
+    function renderAlertHistory() {
+        const list = document.getElementById('historyList');
+
+        if (alertHistory.length === 0) {
+            list.innerHTML = `
+            <div class="text-center py-16">
+                <div class="text-6xl text-gray-400 mb-4">📜</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No Alert History</h3>
+                <p class="text-gray-400">Alert history will appear here</p>
+            </div>
+        `;
+            return;
+        }
+
+        list.innerHTML = alertHistory.map(item => `
+        <div class="alert-card rounded-lg p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="text-xl">${getSeverityIcon(item.severity)}</span>
+                    <div>
+                        <h4 class="text-lg font-bold text-white">${item.alert_type.replace('_', ' ')}</h4>
+                        <p class="text-gray-300 text-sm">${item.message}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-400">${new Date(item.created_at).toLocaleString()}</p>
+                    <span class="px-2 py-1 bg-gray-600 text-white text-xs rounded">
+                        ${item.status || 'Resolved'}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function showTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+
+        // Show selected tab content
+        document.getElementById(tabName + 'Content').classList.remove('hidden');
+        document.getElementById(tabName + 'Tab').classList.add('active');
+    }
+
+    function getSeverityColor(severity) {
+        switch (severity) {
+            case 'CRITICAL': return 'red-500';
+            case 'HIGH': return 'orange-500';
+            case 'MEDIUM': return 'yellow-500';
+            case 'LOW': return 'blue-500';
+            default: return 'gray-500';
+        }
+    }
+
+    function getSeverityIcon(severity) {
+        switch (severity) {
+            case 'CRITICAL': return '🚨';
+            case 'HIGH': return '⚠️';
+            case 'MEDIUM': return '⚡';
+            case 'LOW': return 'ℹ️';
+            default: return '📋';
+        }
+    }
+
+    // Modal functions
+    function showCreateRuleModal() {
+        document.getElementById('createRuleModal').classList.remove('hidden');
+    }
+
+    function hideCreateRuleModal() {
+        document.getElementById('createRuleModal').classList.add('hidden');
+    }
+
+    // Alert actions
+    function viewAlert(alertId) {
+        const alert = alerts.find(a => a.id === alertId);
+        if (alert && alert.inspection_id) {
+            window.location.href = `/history#inspection-${alert.inspection_id}`;
+        } else {
+            alert('Alert details: ' + JSON.stringify(alert, null, 2));
+        }
+    }
+
+    function dismissAlert(alertId) {
+        if (confirm('Are you sure you want to dismiss this alert?')) {
+            fetch(`/api/alerts/${alertId}/dismiss`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadAlerts(); // Reload alerts
+                    } else {
+                        alert('Error dismissing alert: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error dismissing alert:', error);
+                    alert('Error dismissing alert. Please try again.');
+                });
+        }
+    }
+
+    function markAllRead() {
+        if (confirm('Mark all alerts as read?')) {
+            fetch('/api/alerts/mark-all-read', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadAlerts(); // Reload alerts
+                    } else {
+                        alert('Error marking alerts as read: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking alerts as read:', error);
+                });
+        }
+    }
+
+    function testAlerts() {
+        fetch('/api/alerts/test', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Test alert sent successfully!');
+                    loadAlerts(); // Reload to show test alert
+                } else {
+                    alert('Error sending test alert: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending test alert:', error);
+                alert('Error sending test alert. Please try again.');
+            });
+    }
+
+    // Rule management
+    function toggleRule(ruleId) {
+        fetch(`/api/alert-rules/${ruleId}/toggle`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadAlertRules(); // Reload rules
+                } else {
+                    alert('Error toggling rule: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling rule:', error);
+            });
+    }
+
+    function editRule(ruleId) {
+        alert('Edit rule functionality coming soon!');
+    }
+
+    function deleteRule(ruleId) {
+        if (confirm('Are you sure you want to delete this alert rule?')) {
+            fetch(`/api/alert-rules/${ruleId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadAlertRules(); // Reload rules
+                    } else {
+                        alert('Error deleting rule: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting rule:', error);
+                });
+        }
+    }
+
+    // Form submission
+    document.getElementById('createRuleForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById('ruleName').value,
+            condition_type: document.getElementById('triggerCondition').value,
+            threshold_value: parseFloat(document.getElementById('thresholdValue').value),
+            email_enabled: document.getElementById('emailNotification').checked,
+            sms_enabled: document.getElementById('smsNotification').checked,
+            dashboard_enabled: document.getElementById('dashboardNotification').checked,
+            recipients: document.getElementById('recipients').value
+        };
+
+        fetch('/api/alert-rules/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    hideCreateRuleModal();
+                    loadAlertRules(); // Reload rules
+                    document.getElementById('createRuleForm').reset();
+                    alert('Alert rule created successfully!');
+                } else {
+                    alert('Error creating alert rule: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error creating alert rule:', error);
+                alert('Error creating alert rule. Please try again.');
+            });
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('createRuleModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            hideCreateRuleModal();
+        }
+    });
+</script>
+{% endblock %}

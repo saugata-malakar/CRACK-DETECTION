@@ -1,0 +1,261 @@
+{% extends "commercial/base.html" %}
+{% block title %}About - CrackDetect AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 28px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: -60%; right: -15%;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    }
+    .about-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -40%; left: -10%;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    }
+    .about-hero-content { position: relative; z-index: 1; }
+    .about-hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3.2rem;
+        margin-bottom: 1rem;
+    }
+    .about-hero p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    .about-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.07);
+        transition: transform 0.3s;
+    }
+    .about-card:hover { transform: translateY(-4px); }
+    .about-card-icon {
+        width: 60px; height: 60px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+    .about-card h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: var(--dark);
+        margin-bottom: 1rem;
+    }
+    .about-card p, .about-card li {
+        color: var(--gray);
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+    .about-card ul {
+        padding-left: 1.2rem;
+        margin: 0;
+    }
+    .about-card li { margin-bottom: 0.3rem; }
+
+    .tech-stack {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .tech-tag {
+        background: var(--bg);
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--dark);
+        transition: all 0.3s;
+    }
+    .tech-tag:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .feature-item {
+        background: white;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .feature-item i {
+        font-size: 1.5rem;
+        color: var(--primary);
+        width: 40px;
+        text-align: center;
+    }
+    .feature-item span {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .stats-banner {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 2rem;
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.07);
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    .stat-item-value {
+        font-size: 2.8rem;
+        font-weight: 800;
+        font-family: 'Space Grotesk', sans-serif;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-item-label {
+        font-size: 0.9rem;
+        color: var(--gray);
+        font-weight: 600;
+        margin-top: 0.3rem;
+    }
+
+    .reference-section {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.07);
+    }
+    .reference-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+    }
+    .reference-section p {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-hero animate-fade-in-up">
+    <div class="about-hero-content">
+        <h1>🔬 About CrackDetect AI</h1>
+        <p>AI-powered structural health monitoring for concrete infrastructure. Leveraging state-of-the-art deep learning to detect, classify, and measure cracks with 97%+ accuracy.</p>
+    </div>
+</div>
+
+<!-- Stats Banner -->
+<div class="stats-banner animate-fade-in-up" style="animation-delay: 0.1s">
+    <div>
+        <div class="stat-item-value">97%+</div>
+        <div class="stat-item-label">Model Accuracy</div>
+    </div>
+    <div>
+        <div class="stat-item-value">56K+</div>
+        <div class="stat-item-label">Training Images</div>
+    </div>
+    <div>
+        <div class="stat-item-value">4</div>
+        <div class="stat-item-label">AI Models</div>
+    </div>
+    <div>
+        <div class="stat-item-value">5</div>
+        <div class="stat-item-label">Severity Levels</div>
+    </div>
+</div>
+
+<div class="about-grid">
+    <div class="about-card animate-fade-in-up" style="animation-delay: 0.15s">
+        <div class="about-card-icon" style="background: rgba(99,102,241,0.1);">🎯</div>
+        <h3>Overview</h3>
+        <p>CrackDetect AI is an enterprise-grade platform for detecting cracks in concrete structures using deep learning. Upload any image of a concrete surface and receive instant analysis including severity classification, measurement estimation, compliance status, and professional repair recommendations.</p>
+    </div>
+    <div class="about-card animate-fade-in-up" style="animation-delay: 0.2s">
+        <div class="about-card-icon" style="background: rgba(16,185,129,0.1);">📊</div>
+        <h3>Dataset: SDNET2018</h3>
+        <p>Trained on the SDNET2018 benchmark dataset:</p>
+        <ul>
+            <li><strong>56,092</strong> images of concrete surfaces (256×256 px)</li>
+            <li><strong>3 categories:</strong> Bridge Decks, Walls, Pavements</li>
+            <li><strong>2 classes:</strong> Cracked and Non-cracked</li>
+            <li>Crack widths from <strong>0.06 mm to 25 mm</strong></li>
+        </ul>
+    </div>
+</div>
+
+<div class="about-card animate-fade-in-up" style="animation-delay: 0.25s; margin-bottom: 3rem;">
+    <div class="about-card-icon" style="background: rgba(139,92,246,0.1);">🤖</div>
+    <h3>Technology Stack</h3>
+    <div class="tech-stack">
+        <div class="tech-tag">🐍 Python / Flask</div>
+        <div class="tech-tag">🔥 PyTorch</div>
+        <div class="tech-tag">🧠 ResNet-18 / 50</div>
+        <div class="tech-tag">⚡ EfficientNet</div>
+        <div class="tech-tag">📐 VGG-16</div>
+        <div class="tech-tag">🎮 CUDA GPU</div>
+        <div class="tech-tag">🗃️ SQLite</div>
+        <div class="tech-tag">🔐 OAuth 2.0</div>
+        <div class="tech-tag">📄 ReportLab PDF</div>
+        <div class="tech-tag">📏 OpenCV</div>
+    </div>
+</div>
+
+<h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; color: var(--dark); margin-bottom: 1.5rem; text-align: center;">
+    <i class="fas fa-star" style="color: var(--warning);"></i> Platform Features
+</h2>
+<div class="features-list">
+    <div class="feature-item"><i class="fas fa-brain"></i><span>4 CNN Architectures</span></div>
+    <div class="feature-item"><i class="fas fa-chart-bar"></i><span>5-Level Severity Classification</span></div>
+    <div class="feature-item"><i class="fas fa-ruler"></i><span>Crack Width Measurement</span></div>
+    <div class="feature-item"><i class="fas fa-file-pdf"></i><span>PDF Report Generation</span></div>
+    <div class="feature-item"><i class="fas fa-project-diagram"></i><span>Project Management</span></div>
+    <div class="feature-item"><i class="fas fa-bell"></i><span>Smart Alert System</span></div>
+    <div class="feature-item"><i class="fas fa-columns"></i><span>Before/After Comparison</span></div>
+    <div class="feature-item"><i class="fas fa-draw-polygon"></i><span>Image Annotations</span></div>
+    <div class="feature-item"><i class="fas fa-shield-alt"></i><span>AASHTO / ACI Compliance</span></div>
+    <div class="feature-item"><i class="fas fa-tools"></i><span>Repair Recommendations</span></div>
+</div>
+
+<div class="reference-section animate-fade-in-up">
+    <h2><i class="fas fa-book" style="color: var(--primary);"></i> References</h2>
+    <p><strong>Dataset:</strong> Dorafshan, S., Thomas, R. J., & Maguire, M. (2018). <em>SDNET2018: An annotated image dataset for training deep learning-based concrete crack detection algorithms.</em></p>
+    <p><strong>Institution:</strong> Utah State University</p>
+    <p><strong>Standards:</strong> AASHTO LRFD Bridge Design Specifications, ACI 318/224, Eurocode 2 (EN 1992)</p>
+</div>
+{% endblock %}

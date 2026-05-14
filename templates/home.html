@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Concrete Crack Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 60px;
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    
+    .hero p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+    
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+    }
+    
+    .stat {
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 15px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: white;
+        color: #667eea;
+    }
+    
+    .btn-secondary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+        margin-bottom: 15px;
+        color: #667eea;
+    }
+    
+    .models-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
+    
+    .model-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    
+    .model-card h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    
+    .model-accuracy {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #10b981;
+        margin: 15px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>🏗️ AI-Powered Crack Detection</h1>
+    <p>Detect cracks in concrete structures with 97% accuracy using deep learning</p>
+    
+    <div class="hero-stats">
+        <div class="stat">
+            <div class="stat-number">56K+</div>
+            <div class="stat-label">Training Images</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">97%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">4</div>
+            <div class="stat-label">CNN Models</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">50ms</div>
+            <div class="stat-label">Inference Time</div>
+        </div>
+    </div>
+    
+    <div class="cta-buttons">
+        <a href="/predict-page" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload & Predict
+        </a>
+        <a href="/compare" class="btn btn-secondary">
+            <i class="fas fa-balance-scale"></i> Compare Models
+        </a>
+    </div>
+</div>
+
+<h2 style="text-align: center; margin-bottom: 40px; font-size: 2rem;">✨ Key Features</h2>
+
+<div class="features">
+    <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>Multiple Models</h3>
+        <p>Choose from ResNet, EfficientNet, VGG, and custom CNN architectures</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Real-time Detection</h3>
+        <p>Get instant predictions with confidence scores in milliseconds</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Model Comparison</h3>
+        <p>Compare predictions across all models simultaneously</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>High Accuracy</h3>
+        <p>96-98% accuracy on SDNET2018 dataset with 56,000+ images</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>GPU Accelerated</h3>
+        <p>CUDA support for fast inference on NVIDIA GPUs</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Easy to Use</h3>
+        <p>Simple drag-and-drop interface for quick analysis</p>
+    </div>
+</div>
+
+<h2 style="text-align: center; margin: 60px 0 40px; font-size: 2rem;">🤖 Available Models</h2>
+
+<div class="models-grid">
+    {% for key, model in models.items() %}
+    <div class="model-card">
+        <h4>{{ model.name }}</h4>
+        <p style="color: #666; font-size: 0.9rem;">{{ model.params }} parameters</p>
+        <div class="model-accuracy">{{ model.accuracy }}</div>
+        <p style="color: #666; margin-bottom: 10px;">{{ model.speed }}</p>
+        <p style="font-size: 0.9rem;">{{ model.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
